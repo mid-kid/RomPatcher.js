@@ -3,18 +3,7 @@
 <head>
 	<title>Rom Patcher JS</title>
 	<meta http-equiv="content-Type" content="text/html; charset=UTF-8"/>
-	<meta name="description" content="An online web-based ROM patcher. Supported formats: IPS, BPS, UPS, APS, RUP, PPF and xdelta."/>
-	<meta name="keywords" content="ips,ups,aps,bps,rup,ninja,ppf,xdelta,patcher,online,html5,web,rom,patch,hack,translation"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
-	<link rel="manifest" href="./manifest.json"/>
-	<link rel="shortcut icon" href="./style/favicon.png" type="image/png" sizes="16x16"/>
-	<link rel="shortcut icon" href="./style/logo192.png" type="image/png" sizes="192x192"/>
-	<!-- iOS icons -->
-	<link rel="apple-touch-icon" sizes="57x57" href="./style/logo114.png" />
-	<link rel="apple-touch-icon" sizes="114x114" href="./style/logo114.png" />
-	<link rel="apple-touch-icon" sizes="72x72" href="./style/logo144.png" />
-	<link rel="apple-touch-icon" sizes="144x144" href="./style/logo144.png" />
-	<link rel="apple-touch-icon" href="./style/logo192.png" />
 
 	<link type="text/css" rel="stylesheet" href="./style/RomPatcher.css" media="all"/>
 	<script type="text/javascript" src="./js/locale.js"></script>
@@ -22,18 +11,10 @@
 	<script type="text/javascript" src="./js/MarcFile.js"></script>
 	<script type="text/javascript" src="./js/crc.js"></script>
 	<script type="text/javascript" src="./js/formats/zip.js"></script>
-	<script type="text/javascript" src="./js/formats/ips.js"></script>
-	<script type="text/javascript" src="./js/formats/ups.js"></script>
-	<script type="text/javascript" src="./js/formats/aps.js"></script>
 	<script type="text/javascript" src="./js/formats/bps.js"></script>
-	<script type="text/javascript" src="./js/formats/rup.js"></script>
-	<script type="text/javascript" src="./js/formats/ppf.js"></script>
-	<script type="text/javascript" src="./js/formats/pmsr.js"></script>
-	<script type="text/javascript" src="./js/formats/vcdiff.js"></script>
 	<script type="text/javascript" src="./js/zip.js/zip.js"></script>
 
 	<script type="text/javascript"><!--
-		/*
 		// PREDEFINED PATCHES EXAMPLE
 		// uncomment this to enable predefined patches, Rom Patcher JS will fetch patches hosted in your server
 		// - format should be self explanatory
@@ -53,7 +34,6 @@
 			//uncompressed patch (not recommended because of bandwidth purposes)
 			{patch:'./_example/MarvelousATI_EN_v1.07.xdelta',name:'Marvelous (SFC) ENG Translation v1.07',crc:0xcedf3ba7}
 		];
-		*/
 	--></script>
 	
 	
@@ -80,16 +60,10 @@
 	-->
 
 </head>
-<body><div id="column">
-
-
-<!-- HEADER -->
-<header><img src="./style/logo192.png" /><h1>Rom Patcher JS</h1></header>
+<body>
 
 <!-- APP -->
-<div id="wrapper">
-	<div id="switch-container"><span id="switch-create-button" onclick="setCreatorMode(!/enabled/.test(el('switch-create').className));"><span data-localize="creator_mode">Creator mode</span> <span id="switch-create" class="switch disabled"></span></span></div>
-
+<div id="patcher">
 	<div id="tab0" class="tab">
 		<div class="row">
 			<div class="leftcol"><label for="input-file-rom" data-localize="rom_file">ROM file:</label></div>
@@ -101,18 +75,6 @@
 			<div class="leftcol">CRC32:</div><div class="rightcol"><span id="crc32"></span></div>
 			<div class="leftcol">MD5:</div><div class="rightcol"><span id="md5"></span></div>
 			<div class="leftcol">SHA-1:</div><div class="rightcol"><span id="sha1"></span></div>
-		</div>
-		<div class="row" id="row-removeheader" style="display:none">
-			<div class="leftcol"></div>
-			<div class="rightcol">
-				<input type="checkbox" id="checkbox-removeheader" /> <label for="checkbox-removeheader" data-localize="remove_header">Remove header before patching</label>
-			</div>
-		</div>
-		<div class="row" id="row-addheader" style="display:none">
-			<div class="leftcol"></div>
-			<div class="rightcol">
-				<input type="checkbox" id="checkbox-addheader" /> <label for="checkbox-addheader" data-localize="add_header">Add temporary header:</label> <small>(<label id="headersize" for="checkbox-addheader"></label>)</small>
-			</div>
 		</div>
 
 		<div class="row" id="row-file-patch">
@@ -128,55 +90,13 @@
 		</div>
 	</div>
 
-
-
-	<div id="tab1" class="tab">
-		<div class="row">
-			<div class="leftcol"><label for="input-file-rom1" data-localize="original_rom" >Original ROM:</label></div>
-			<div class="rightcol">
-				<input type="file" id="input-file-rom1" />
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="leftcol"><label for="input-file-rom2" data-localize="modified_rom">Modified ROM:</label></div>
-			<div class="rightcol">
-				<input type="file" id="input-file-rom2" />
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="leftcol" data-localize="patch_type">Patch type:</div>
-			<div class="rightcol">
-				<select id="select-patch-type">
-					<option value="ips">IPS</option>
-					<option value="bps">BPS</option>
-					<option value="ppf">PPF</option>
-					<option value="ups">UPS</option>
-					<option value="aps">APS</option>
-					<option value="rup">RUP</option>
-				</select>
-			</div>
-		</div>
-
-		<div class="buttons">
-			<span id="message-create" class="message"></span>
-			<button id="button-create" class="disabled" disabled onclick="createPatch(romFile1, romFile2, el('select-patch-type').value)" data-localize="create_patch">Create patch</button>
-		</div>
-	</div>
+	<!-- FOOTER -->
+	<footer>
+		Rom Patcher JS <small>v2.3</small> by <a href="/">Marc Robledo</a>
+		<br />
+		<i class="icon github"></i> <a href="https://github.com/marcrobledo/RomPatcher.js/" target="_blank">See on GitHub</a>
+		<i class="icon heart"></i> <a href="https://www.paypal.me/marcrobledo/5" target="_blank" rel="nofollow">Donate</a>
+	</footer>
 </div>
 
-<div id="snackbar" class="closed"></div>
-
-
-
-
-<!-- FOOTER -->
-<footer>
-	Rom Patcher JS <small>v2.3</small> by <a href="/">Marc Robledo</a>
-	<br />
-	<i class="icon github"></i> <a href="https://github.com/marcrobledo/RomPatcher.js/" target="_blank">See on GitHub</a>
-	<i class="icon heart"></i> <a href="https://www.paypal.me/marcrobledo/5" target="_blank" rel="nofollow">Donate</a>
-</footer>
-
-</div></body></html>
+</body></html>
